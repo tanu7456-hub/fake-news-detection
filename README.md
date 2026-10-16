@@ -41,6 +41,9 @@ Run the application:
 ## Disclaimer
 The application provides predictions and fact-checking information for assistance. Its results are not definitive proof that a claim is true or false. Always review the available evidence and original sources.
 
+## 📸 Application Screenshots
+
+### Homepage
 
 
-
+### News Analysis Result
