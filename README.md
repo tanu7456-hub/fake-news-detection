@@ -1,7 +1,7 @@
-# 🔎 TruthLens — Fake News Detection System
+# 🔎 AI News Fact Checker
 
 ## About the Project
-TruthLens is a web-based application designed to help users analyze news claims, classify news text, and find available fact-checking evidence.
+AI News Fact Checker is a web-based application designed to help users analyze news claims, classify news text, and find available fact-checking evidence.
 
 ## Features
 - Fake news classification using Machine Learning
@@ -40,3 +40,7 @@ Run the application:
 
 ## Disclaimer
 The application provides predictions and fact-checking information for assistance. Its results are not definitive proof that a claim is true or false. Always review the available evidence and original sources.
+
+
+
+
