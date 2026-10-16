@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI News Fact Checker</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        .factcheck-wrap {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 24px;
+        }
+
+        .factcheck-card {
+            padding: 22px;
+            border: 1px solid #d9deea;
+            border-radius: 16px;
+            background: #fff;
+            margin: 18px 0;
+        }
+
+        .factcheck-card input,
+        .factcheck-card textarea {
+            display: block;
+            box-sizing: border-box;
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0 18px;
+            border: 1px solid #cbd2e1;
+            border-radius: 8px;
+            font: inherit;
+        }
+
+        .factcheck-card textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .factcheck-card button {
+            padding: 12px 20px;
+            border: 0;
+            border-radius: 8px;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 600;
+        }
+
+        .status-uncertain {
+            display: inline-block;
+            padding: 7px 12px;
+            border-radius: 8px;
+            background: #fff1c7;
+            color: #704d00;
+            font-weight: bold;
+        }
+
+        .source-item {
+            padding: 14px 0;
+            border-top: 1px solid #e3e7ef;
+            overflow-wrap: anywhere;
+        }
+
+        .source-item a {
+            overflow-wrap: anywhere;
+        }
+
+        .notice {
+            padding: 12px;
+            border-radius: 8px;
+            background: #f1f5f9;
+        }
+
+        .error-message {
+            padding: 12px;
+            border-radius: 8px;
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .muted {
+            color: #5f6878;
+            font-size: 0.95rem;
+        }
+    </style>
+</head>
+<body>
+<main class="factcheck-wrap">
+    <h1>AI News Fact Checker</h1>
+    <p class="muted">
+        Search published fact-check reports and inspect their sources.
+        Results are evidence, not a guarantee of truth.
+    </p>
+
+    <section class="factcheck-card">
+        <form method="POST" action="/">
+            <label for="news_text"><strong>News text</strong></label>
+            <textarea
+                id="news_text"
+                name="news_text"
+                maxlength="20000"
+                placeholder="Paste the news or claim here..."
+            >{{ news_text }}</textarea>
+
+            <label for="news_url"><strong>News article URL</strong></label>
+            <input
+                id="news_url"
+                type="url"
+                name="news_url"
+                value="{{ news_url }}"
+                placeholder="https://example.com/news-article"
+            >
+
+            <p class="muted">
+                You can provide text, a URL, or both. If both are supplied,
+                the pasted text and extracted article are checked together.
+            </p>
+
+            <button type="submit">Check available evidence</button>
+        </form>
+    </section>
+
+    {% if error %}
+        <div class="error-message" role="alert">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    {% if result %}
+    <section class="factcheck-card" aria-live="polite">
+        <h2>Verification results</h2>
+
+        <p>
+            <span class="status-uncertain">
+                {{ result.status }}
+            </span>
+        </p>
+
+        {% if result.article_title %}
+            <h3>{{ result.article_title }}</h3>
+        {% endif %}
+
+        <p>{{ result.message }}</p>
+
+        <div class="notice">
+            <strong>Important:</strong>
+            A matching report may review a different claim or refer to
+            an older event. Read the original report before drawing
+            a conclusion. No matching report does not mean the news is false.
+        </div>
+
+        <h3>Published fact-check sources</h3>
+
+        {% if result.sources %}
+            {% for source in result.sources %}
+            <article class="source-item">
+                <h4>{{ source.title }}</h4>
+                <p><strong>Publisher:</strong> {{ source.publisher }}</p>
+                <p><strong>Reviewed claim:</strong> {{ source.claim }}</p>
+                <p><strong>Publisher's rating:</strong> {{ source.rating }}</p>
+
+                {% if source.date %}
+                    <p><strong>Review date:</strong> {{ source.date }}</p>
+                {% endif %}
+
+                {% if source.url and source.url.startswith('https://') %}
+                    <p>
+                        <a href="{{ source.url }}"
+                           target="_blank"
+                           rel="noopener noreferrer">
+                            Read original fact-check
+                        </a>
+                    </p>
+                {% endif %}
+            </article>
+            {% endfor %}
+        {% else %}
+            <p>
+                No matching published fact-check report was returned.
+                The claim remains uncertain; seek additional reliable sources.
+            </p>
+        {% endif %}
+
+        <h3>ML model prediction (supporting signal only)</h3>
+
+        {% if result.ml %}
+            <p>
+                Model label: <strong>{{ result.ml.label }}</strong>
+                {% if result.ml.confidence is not none %}
+                    — model confidence: {{ result.ml.confidence }}%
+                {% endif %}
+            </p>
+        {% else %}
+            <p>
+                ML model unavailable. You can still use fact-check search.
+                Train the model separately if you want this optional signal.
+            </p>
+        {% endif %}
+
+        <p class="muted">
+            The ML label is not an independent verification of the facts.
+        </p>
+    </section>
+    {% endif %}
+</main>
+</body>
+</html>
