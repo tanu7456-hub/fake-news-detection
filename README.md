@@ -44,6 +44,10 @@ The application provides predictions and fact-checking information for assistanc
 ## 📸 Application Screenshots
 
 ### Homepage
+fake_news_home_page.png
 
+**###give news to detect**
+fake_news_cheker.png
 
 ### News Analysis Result
+result.png
